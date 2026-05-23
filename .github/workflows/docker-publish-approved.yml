@@ -38,17 +38,19 @@ jobs:
         run: |
           docker build \
             --build-arg ENV_FILE="${{ secrets.ENV_FILE_DEVELOP }}" \
-            -t rodrigoapolo/front-rick:dev \
+            -t rodrigoapolo/front-rick:dev-latest \
+            -t rodrigoapolo/front-rick:dev-${{ github.sha }} \
             .
-          docker push rodrigoapolo/front-rick:dev
+          docker push rodrigoapolo/front-rick:dev-latest
+          docker push rodrigoapolo/front-rick:dev-${{ github.sha }}
 
       - name: Build e Push - Main
         if: github.event.pull_request.base.ref == 'main'
         run: |
           docker build \
             --build-arg ENV_FILE="${{ secrets.ENV_FILE_PRODUCTION }}" \
-            -t rodrigoapolo/front-rick:latest \
-            -t rodrigoapolo/front-rick:${{ github.sha }} \
+            -t rodrigoapolo/front-rick:main-latest \
+            -t rodrigoapolo/front-rick:main-${{ github.sha }} \
             .
-          docker push rodrigoapolo/front-rick:latest
-          docker push rodrigoapolo/front-rick:${{ github.sha }}
+          docker push rodrigoapolo/front-rick:main-latest
+          docker push rodrigoapolo/front-rick:main-${{ github.sha }}
