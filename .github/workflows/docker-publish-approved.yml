@@ -1,16 +1,29 @@
-name: Build and Push Frontend
+name: Publish Docker image on merge
 
 on:
-  push:
+  pull_request:
+    types: [closed]
     branches:
-      - develop
+      - dev
       - main
 
 jobs:
-  build-and-push:
+  publish:
+    name: Build and push Docker image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository
 
     steps:
+      - name: Debug event
+        run: |
+          echo "Merged: ${{ github.event.pull_request.merged }}"
+          echo "Base ref: ${{ github.event.pull_request.base.ref }}"
+          echo "Repo: ${{ github.event.pull_request.head.repo.full_name }}"
+
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -20,17 +33,17 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build e Push - Develop
-        if: github.ref == 'refs/heads/develop'
+      - name: Build e Push - Dev
+        if: github.event.pull_request.base.ref == 'dev'
         run: |
           docker build \
             --build-arg ENV_FILE="${{ secrets.ENV_FILE_DEVELOP }}" \
-            -t rodrigoapolo/front-rick:develop \
+            -t rodrigoapolo/front-rick:dev \
             .
-          docker push rodrigoapolo/front-rick:develop
+          docker push rodrigoapolo/front-rick:dev
 
       - name: Build e Push - Main
-        if: github.ref == 'refs/heads/main'
+        if: github.event.pull_request.base.ref == 'main'
         run: |
           docker build \
             --build-arg ENV_FILE="${{ secrets.ENV_FILE_PRODUCTION }}" \
