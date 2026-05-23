@@ -1,0 +1,23 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        ENV_FILE: "${ENV_FILE}"
+    image: rick-frontend:prod
+    container_name: rick_frontend_prod
+    restart: always
+    ports:
+      - "80:80"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+    networks:
+      - rick_network
+
+networks:
+  rick_network:
+    driver: bridge
