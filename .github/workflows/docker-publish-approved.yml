@@ -4,7 +4,7 @@ on:
   pull_request:
     types: [closed]
     branches:
-      - dev
+      - develop
       - main
 
 jobs:
@@ -33,16 +33,16 @@ jobs:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      - name: Build e Push - Dev
-        if: github.event.pull_request.base.ref == 'dev'
+      - name: Build e Push - Develop
+        if: github.event.pull_request.base.ref == 'develop'
         run: |
           docker build \
             --build-arg ENV_FILE="${{ secrets.ENV_FILE_DEVELOP }}" \
-            -t rodrigoapolo/front-rick:dev-latest \
-            -t rodrigoapolo/front-rick:dev-${{ github.sha }} \
+            -t rodrigoapolo/front-rick:develop-latest \
+            -t rodrigoapolo/front-rick:develop-${{ github.sha }} \
             .
-          docker push rodrigoapolo/front-rick:dev-latest
-          docker push rodrigoapolo/front-rick:dev-${{ github.sha }}
+          docker push rodrigoapolo/front-rick:develop-latest
+          docker push rodrigoapolo/front-rick:develop-${{ github.sha }}
 
       - name: Build e Push - Main
         if: github.event.pull_request.base.ref == 'main'
